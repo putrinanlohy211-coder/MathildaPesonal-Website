@@ -31,7 +31,7 @@ btn.addEventListener("click", () => {
 
 
 const reveals = document.querySelectorAll(
-  ".article-card, .info-item, .about-grid"
+  ".article-card, .profile-card, .about-grid"
 );
 reveals.forEach(el => el.classList.add("reveal"));
 
@@ -67,14 +67,41 @@ const lightbox = document.getElementById("lightbox");
 if (lightbox) {
   const lightboxImg = document.getElementById("lightbox-img");
   const lightboxClose = document.getElementById("lightbox-close");
+  const lightboxPrev = document.getElementById("lightbox-prev");
+  const lightboxNext = document.getElementById("lightbox-next");
 
-  document.querySelectorAll(".gallery-card img").forEach(img => {
+  const imgs = [...document.querySelectorAll(".gallery-card img")];
+  let currentIndex = 0;
+
+  const lightboxCaption = document.getElementById("lightbox-caption");
+
+  function openLightbox(index) {
+  currentIndex = index;
+  lightboxImg.src = imgs[currentIndex].src;
+  lightboxImg.alt = imgs[currentIndex].alt;
+  lightboxCaption.textContent = imgs[currentIndex].alt;
+  lightbox.classList.add("active");
+}
+
+  imgs.forEach((img, index) => {
     img.style.cursor = "pointer";
-    img.addEventListener("click", () => {
-      lightboxImg.src = img.src;
-      lightboxImg.alt = img.alt;
-      lightbox.classList.add("active");
-    });
+    img.addEventListener("click", () => openLightbox(index));
+  });
+
+  lightboxPrev.addEventListener("click", (e) => {
+  e.stopPropagation();
+  currentIndex = (currentIndex - 1 + imgs.length) % imgs.length;
+  lightboxImg.src = imgs[currentIndex].src;
+  lightboxImg.alt = imgs[currentIndex].alt;
+  lightboxCaption.textContent = imgs[currentIndex].alt;
+  });
+
+  lightboxNext.addEventListener("click", (e) => {
+    e.stopPropagation();
+    currentIndex = (currentIndex + 1) % imgs.length;
+    lightboxImg.src = imgs[currentIndex].src;
+    lightboxImg.alt = imgs[currentIndex].alt;
+    lightboxCaption.textContent = imgs[currentIndex].alt;
   });
 
   lightboxClose.addEventListener("click", () => {
@@ -89,5 +116,7 @@ if (lightbox) {
 
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") lightbox.classList.remove("active");
+    if (e.key === "ArrowLeft") lightboxPrev.click();
+    if (e.key === "ArrowRight") lightboxNext.click();
   });
 }
